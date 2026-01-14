@@ -1,9 +1,9 @@
 # Google Cloud Agent Engine Identity Example
 
 ## Overview
-This project provides a reference implementation of a **Fact Checking Decision Auditor** agent built using **Google Cloud Vertex AI Agent Engine** and the **Agent Development Kit (ADK)**. 
+This project provides a reference implementation of a **Fact Checking Decision Auditor** agent built using **Google Cloud Vertex AI Agent Engine** and the **Agent Development Kit (ADK)**. Ultimately, this is an identity-focused implementation of an example from the [Agent Starter Pack](https://github.com/GoogleCloudPlatform/agent-starter-pack)
 
-The primary goal of this example is to demonstrate **Agent Engine Identity**, showing how to deploy an agent with a dedicated identity (Service Account) and manage its permissions. This allows the agent to securely interact with Google Cloud services using its own credentials.
+The primary goal of this example is to demonstrate [Agent Engine Identity](https://docs.cloud.google.com/agent-builder/agent-engine/agent-identity), showing how to deploy an agent with a dedicated identity and manage its permissions. This allows the agent to securely interact with Google Cloud services using its own credentials.
 
 ### Architecture
 The application implements a `SequentialAgent` pipeline consisting of:
@@ -23,14 +23,14 @@ This is not an officially supported Google product
 
 ## Setup Environment
 ```bash
-#Setup Environment variables
+# Setup Environment variables
 export ORGANIZATION_ID= #e.g. 123456789876
 export PROJECT_NAME= #e.g. agent-engine-identity
 export BILLING_ACCOUNT= #e.g. 111111-222222-333333
 export AGENT_ENGINE_LOCATION= #e.g. us-central1
 export STAGING_BUCKET= #e.g. ae-identity-agent-code (Globally Unique)
 
-#Create Project
+# Create Project
 gcloud config unset project
 gcloud config unset billing/quota_project
 printf 'Y' | gcloud projects create --name=$PROJECT_NAME --organization=$ORGANIZATION_ID
@@ -43,11 +43,11 @@ printf 'y' |  gcloud beta billing projects link $PROJECT_ID --billing-account=$B
 gcloud config set project $PROJECT_ID
 gcloud config set billing/quota_project $PROJECT_ID
 
-#Enable APIs
+# Enable APIs
 printf 'y' |  gcloud services enable cloudresourcemanager.googleapis.com --project $PROJECT_ID
 printf 'y' |  gcloud services enable aiplatform.googleapis.com --project $PROJECT_ID
 
-#Create Agent Engine Staging Bucket
+# Create Agent Engine Staging Bucket
 gcloud storage buckets create gs://$STAGING_BUCKET \
     --location=$AGENT_ENGINE_LOCATION \
     --default-storage-class=STANDARD \
@@ -68,7 +68,7 @@ echo "Agent EngineLocation: $AGENT_ENGINE_LOCATION"
 
     Run the following code to deploy the Agent Engine instance with a dedicated identity.
 ```bash
-#Deploy Agent Engine Stub
+# Deploy Agent Engine Stub
 agent_engine_operation=$(curl -s -X POST \
     "https://$AGENT_ENGINE_LOCATION-aiplatform.googleapis.com/v1/projects/$PROJECT_ID/locations/$AGENT_ENGINE_LOCATION/reasoningEngines" \
      -H "Authorization: Bearer $(gcloud auth print-access-token)" \
@@ -82,17 +82,19 @@ agent_engine_operation=$(curl -s -X POST \
     }
 }
 EOF)
+
 echo "Agent Engine Operation: $agent_engine_operation"
 
-#Get Agent Name and Identity Reference
+# Get Agent Name and Identity Reference
 read -r agent_name agent_identity <<< $(curl -s -X GET \
      -H "Authorization: Bearer $(gcloud auth print-access-token)" \
      -H "Content-Type: application/json; charset=utf-8" \
      "https://$AGENT_ENGINE_LOCATION-aiplatform.googleapis.com/v1/$agent_engine_operation" | jq -r ' .response.name, .response.spec.effectiveIdentity')
+
 echo "Agent Identity: $agent_identity"
 export AGENT_ENGINE_NAME=$agent_name
 
-#Give Agent Identity Necessary Permissions
+# Give Agent Identity Necessary Permissions
 gcloud projects add-iam-policy-binding $PROJECT_ID \
     --member="principal://$agent_identity" \
     --role="roles/serviceusage.serviceUsageConsumer"
