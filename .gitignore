@@ -1,0 +1,8 @@
+.env
+.gemini/
+.vscode/
+__pycache__/
+venv/
+firebase-debug.log
+notes.txt
+.auditor/.adk/
