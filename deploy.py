@@ -1,7 +1,5 @@
 import os
 import vertexai
-from vertexai import agent_engines
-from vertexai import types
 from auditor import root_agent
 
 # Configuration
@@ -20,8 +18,7 @@ try:
     # Create the Agent Engine instance
     client = vertexai.Client(
         project=PROJECT_ID,
-        location=AGENT_ENGINE_LOCATION,
-        http_options=dict(api_version="v1beta1")
+        location=AGENT_ENGINE_LOCATION
     )    
 
     print("Updating Agent Engine Instance...")
@@ -29,7 +26,7 @@ try:
         name=AGENT_ENGINE_NAME,
         agent=root_agent,
         config={
-            "requirements": ['google-cloud-aiplatform[adk,agent_engines]==1.132.0','pydantic==2.12.5','cloudpickle==3.1.2'],
+            "requirements": ['google-cloud-aiplatform[adk,agent_engines]==1.136.0','pydantic==2.12.5','cloudpickle==3.1.2'],
             "staging_bucket": f"gs://{STAGING_BUCKET}",
             "agent_framework": "google-adk",
             "extra_packages": [

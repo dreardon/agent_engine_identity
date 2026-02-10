@@ -2,8 +2,9 @@
 from google.adk import Agent
 from google.adk.agents.callback_context import CallbackContext
 from google.adk.models import LlmResponse
+from google.genai.types import Part 
 from google.adk.tools import google_search
-from google.genai import types
+
 
 from . import prompt
 
@@ -38,7 +39,7 @@ def _render_reference(
             references.append('* ' + ': '.join(parts) + '\n')
     if references:
         reference_text = ''.join(['\n\nReference:\n\n'] + references)
-        llm_response.content.parts.append(types.Part(text=reference_text))
+        llm_response.content.parts.append(Part(text=reference_text))
     if all(part.text is not None for part in llm_response.content.parts):
         all_text = '\n'.join(part.text for part in llm_response.content.parts)
         llm_response.content.parts[0].text = all_text

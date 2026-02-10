@@ -2,7 +2,9 @@
 .gemini/
 .vscode/
 __pycache__/
-venv/
+venvs/
 firebase-debug.log
+.adk/
+
+
 notes.txt
-.auditor/.adk/
